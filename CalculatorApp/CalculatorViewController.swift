@@ -55,6 +55,7 @@ class CalculatorViewController: UIViewController {
         calculationProcess()
     }
 
+    
     //計算の条件分岐
     private func calculationProcess(){
         
@@ -126,7 +127,6 @@ class CalculatorViewController: UIViewController {
         self.followingNumber = "0"
         self.calculationStatus = .none
     }
-    
     
     
     // ボタンの処理
