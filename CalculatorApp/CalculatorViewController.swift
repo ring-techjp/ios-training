@@ -44,9 +44,10 @@ class CalculatorViewController: UIViewController {
     var calculationStatus: CalculationStatus = .none
     
     
-    var numberOfScreen:String = ""
+    var floatNum:String = ""
+    var plusNum:String = ""
+    var minusNum:String = ""
     var previousNumber:String = ""
-    var followingNumber:String = ""
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -64,20 +65,17 @@ class CalculatorViewController: UIViewController {
                 .subscribe(onNext: { [weak self] count in
                     switch self?.calculationStatus{
                     case .none:
-//                        self?.numberLabel.text = ""
                         self?.previousNumber += count
-                        print("Count",self?.previousNumber as Any)
                         self?.numberLabel.text = self?.previousNumber
                     case .plus:
-                        self?.followingNumber  += count
-                        print("Count",self?.followingNumber as Any)
-                        self?.numberLabel.text = self?.followingNumber
+                        self?.floatNum += count
+                        self?.plusNum = String(Int(self?.previousNumber ?? "0")! + Int(self?.floatNum ?? "0")!)
+                        self?.numberLabel.text = self?.floatNum
                     case .minus:
-                        self?.followingNumber  += count
-                        print("Count",self?.followingNumber as Any)
-                        self?.numberLabel.text = self?.followingNumber
+                        self?.floatNum += count
+                        self?.minusNum = String(Int(self?.previousNumber ?? "0")! - Int(self?.floatNum ?? "0")!)
+                        self?.numberLabel.text = self?.floatNum
                     case .some(.none):
-                        self?.numberLabel.text = ""
                         self?.previousNumber += count
                         print("Count",self?.previousNumber as Any)
                         self?.numberLabel.text = self?.previousNumber
@@ -88,25 +86,22 @@ class CalculatorViewController: UIViewController {
         
         //=押したときの処理
             equalButton.rx.tap.subscribe({ [weak self] _ in
-                let previousNum:Int = Int(self!.previousNumber)!
-                let followingNum:Int = Int(self!.followingNumber)!
             switch self?.calculationStatus{
             
             case .none:
                 print("none")
                 return;
-                
             case .plus:
-                let plusResult:String = String(previousNum + followingNum)
-                self?.numberLabel.text = plusResult
-                print("計算結果",plusResult)
+                self?.numberLabel.text = self?.plusNum ?? "0"
+                print("足し算計算結果",self?.plusNum)
                 self?.resetProcess()
+                self?.calculationStatus = .none
                     
             case .minus:
-                let minusResult:String = String(previousNum - followingNum)
-                self?.numberLabel.text = minusResult
-                print("計算結果",minusResult)
+                self?.numberLabel.text = self?.minusNum ?? "0"
+                print("引き算計算結果",self?.minusNum)
                 self?.resetProcess()
+                self?.calculationStatus = .none
             case .some(.none):
                 print("none")
                 return;
@@ -116,7 +111,7 @@ class CalculatorViewController: UIViewController {
         //クリアボタンを押したときのリセット処理
             resetButton.rx.tap.subscribe({ [weak self] _ in
             self?.resetProcess()
-            self?.numberLabel.text = ""
+            self?.numberLabel.text = "0"
             print("c")
             }).disposed(by: disposeBag)
     }
@@ -124,7 +119,8 @@ class CalculatorViewController: UIViewController {
     //リセット処理
     private func resetProcess(){
         self.previousNumber = "0"
-        self.followingNumber = "0"
+//        self.followingNumber = "0"
+        self.floatNum = ""
         self.calculationStatus = .none
     }
     
